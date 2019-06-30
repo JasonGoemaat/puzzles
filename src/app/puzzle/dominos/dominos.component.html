@@ -1,0 +1,9 @@
+<p>dominoes works!</p>
+
+<div class="dominos-puzzle" *ngIf="rows">
+    <div *ngFor="let row of rows" class="row">
+        <div *ngFor="let col of row" class="col {{col.pos}}" [ngClass]="{active: col.active, double: col.isDouble }">{{ (col.digit >= 0 ? col.digit : (col.digit == -1 ? ' ' : 'X')) }}<div></div></div>
+    </div>
+</div>
+
+<button mat-button (click)="solve()">Solve</button>
