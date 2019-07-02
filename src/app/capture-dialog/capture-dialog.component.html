@@ -1,0 +1,12 @@
+<h1 mat-dialog-title>Hi {{data.name}}</h1>
+<div mat-dialog-content>
+    <div class="content">
+        <video [hidden]="!haveVideo" #video (click)="capture($event)" width="1280" height="720" constrols autoplay></video>
+        <div [hidden]="!isLoading"><mat-spinner></mat-spinner></div>
+        <canvas [hidden]="!havePicture" #canvas id="myCanvas" width="1280" height="720"></canvas>
+    </div>
+</div>
+<div mat-dialog-actions>
+    <button mat-button (click)="onNoClick()">No Thanks</button>
+    <button mat-button [mat-dialog-close]="data.animal" cdkFocusInitial>Ok</button>
+</div>
