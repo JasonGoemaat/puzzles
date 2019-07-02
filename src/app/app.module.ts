@@ -6,10 +6,13 @@ import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { PuzzleModule } from './puzzle/puzzle.module';
 import { MaterialModule } from './material/material.module';
+import { CaptureDialogComponent } from './capture-dialog/capture-dialog.component';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    CaptureDialogComponent,
   ],
   imports: [
     BrowserModule,
@@ -17,6 +20,10 @@ import { MaterialModule } from './material/material.module';
     BrowserAnimationsModule,
     PuzzleModule,
     MaterialModule,
+    FormsModule
+  ],
+  entryComponents: [
+    CaptureDialogComponent,
   ],
   providers: [],
   bootstrap: [AppComponent]

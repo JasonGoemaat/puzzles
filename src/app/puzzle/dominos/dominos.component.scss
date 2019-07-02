@@ -19,15 +19,17 @@ $inner: $size - ($offset * 2);
     border-collapse: collapse;
     border: dotted 1px #ccc;
 
+    &.double {
+        div {
+            background-color: green;
+        }
+    }
+
     div {
         position: absolute;
         background-color: blue;
         display: none;
         z-index: -1;
-
-        &.double {
-            background-color: green;
-        }
     }
 
     &.active {
