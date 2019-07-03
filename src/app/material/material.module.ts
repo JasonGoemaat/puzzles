@@ -1,9 +1,10 @@
 import { NgModule } from '@angular/core';
-import { MatTabsModule } from "@angular/material/tabs";
 import { MatButtonModule } from "@angular/material/button";
 import { MatDialogModule } from "@angular/material/dialog";
 import { MatInputModule } from "@angular/material/input";
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'
+import { MatSelectModule } from "@angular/material/select";
+import { MatTabsModule } from "@angular/material/tabs";
 
 @NgModule({
   exports: [
@@ -11,6 +12,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'
     MatDialogModule,
     MatInputModule,
     MatProgressSpinnerModule,
+    MatSelectModule,
     MatTabsModule,
   ]
 })

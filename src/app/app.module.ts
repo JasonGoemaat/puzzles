@@ -8,11 +8,13 @@ import { PuzzleModule } from './puzzle/puzzle.module';
 import { MaterialModule } from './material/material.module';
 import { CaptureDialogComponent } from './capture-dialog/capture-dialog.component';
 import { FormsModule } from '@angular/forms';
+import { TrainComponent } from './train/train.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     CaptureDialogComponent,
+    TrainComponent,
   ],
   imports: [
     BrowserModule,

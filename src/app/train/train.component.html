@@ -1,0 +1,28 @@
+<mat-form-field>
+    <mat-label>Select a file</mat-label>
+    <mat-select [(value)]="fileName" (selectionChange)="selectFile($event.value)">
+        <mat-option value="sample1.png">Sample1.png</mat-option>
+        <mat-option value="sample2.png">Sample2.png</mat-option>
+        <mat-option value="sample3.png">Sample3.png</mat-option>
+        <mat-option value="sample4.png">Sample4.png</mat-option>
+        <mat-option value="sample5.png">Sample5.png</mat-option>
+    </mat-select>
+</mat-form-field>
+
+<div class="main">
+    <img #fileImage (click)="onFileImageClick($event)" (load)="imageLoaded($event)">
+    <div class="right">
+        <div class="color-swatch" #swatch>
+            {{ colorHash }}
+        </div>
+        <div class="buttons">
+            <button mat-button (click)="trainDark()">Dark</button>
+            <button mat-button (click)="trainLight()">Light</button>
+        </div>
+        <div>
+            Trainings: {{ trainings?.length }}
+        </div>
+    </div>
+    <canvas class="loader" #canvasLoader></canvas>
+</div>
+
