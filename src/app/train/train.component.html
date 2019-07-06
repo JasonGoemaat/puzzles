@@ -10,9 +10,25 @@
 </mat-form-field>
 
 <div class="main">
-    <img #fileImage (click)="onFileImageClick($event)" (load)="imageLoaded($event)">
+    <div class="left">
+        <img #fileImage (click)="onFileImageClick($event)" (load)="imageLoaded($event)" (mousemove)="mousemove($event)">
+        <canvas #overlayCanvas class="overlay" [hidden]="!useOverlay"></canvas>
+    </div>
     <div class="right">
-        <div class="color-swatch" #swatch>
+        <div class="zoom-parent">
+            <canvas width="105" height="105" #canvasZoom></canvas>
+            <div class="zoom-details">
+                <div><button mat-flat-button (click)="highlight('outside')">outside</button> {{result?.outside}}</div>
+                <div><button mat-flat-button (click)="highlight('inside')">inside</button> {{result?.inside}}</div>
+                <div><button mat-flat-button (click)="highlight('blank')">blank</button> {{result?.blank}}</div>
+                <div><button mat-flat-button (click)="highlight('digit')">digit</button> {{result?.digit}}</div>
+                <div><button mat-flat-button (click)="highlightBounds()">Bounds</button></div>
+                <div><button mat-flat-button (click)="skewImage()">Skew</button></div>
+                <div><button mat-flat-button (click)="transformImage()">Transform</button></div>
+            </div>
+        </div>
+        <p>{{x}}, {{y}}</p>
+        <div class="color-swatch" #swatch [style.color]="textColor">
             {{ colorHash }}
         </div>
         <div class="buttons">
@@ -20,9 +36,12 @@
             <button mat-button (click)="trainLight()">Light</button>
         </div>
         <div>
-            Trainings: {{ trainings?.length }}
+            Result: {{ result }}
+        </div>
+        <div class="buttons">
+            <button mat-button (click)="saveNet()">Save Net</button>
+            <button mat-button (click)="loadNet()">Load Net</button>
         </div>
     </div>
     <canvas class="loader" #canvasLoader></canvas>
 </div>
-
