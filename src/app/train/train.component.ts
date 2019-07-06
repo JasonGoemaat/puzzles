@@ -1,5 +1,5 @@
-import { Component, OnInit, ViewChild, HostListener, NgZone } from '@angular/core';
 import * as brain from "brain.js/browser";
+import { Component, OnInit, ViewChild, HostListener, NgZone } from '@angular/core';
 import { __core_private_testing_placeholder__ } from '@angular/core/testing';
 import { Analyzer } from "./analyzer";
 
@@ -558,7 +558,7 @@ export class TrainComponent implements OnInit {
 
   skewImage() {
     let a = new Analyzer(this.imageData, this.net);
-    let cols = a.findBounds();
+    let { cols } = a.findBounds();
     let slopes = a.getSlopes(cols);
     console.log('slopes:', slopes);
     if (!slopes) {
@@ -570,15 +570,54 @@ export class TrainComponent implements OnInit {
 
   transformImage() {
     let a = new Analyzer(this.imageData, this.net);
+    let start = performance.now();
     let bounds = a.findBounds();
+    let timeBounds = performance.now() - start;
+    start = performance.now();
     let newData = a.getTransformedImage(bounds);
+    let timeTransform = performance.now() - start;
+    start = performance.now();
 
     let canvas: HTMLCanvasElement = this.overlayCanvas.nativeElement;
     canvas.height = newData.height;
     canvas.width = newData.width;
     let ctx = canvas.getContext('2d');
     ctx.putImageData(newData, 0, 0);
+    let timePutImage = performance.now() - start;
 
     this.useOverlay = true;
+    console.log(`Bounds: ${timeBounds} ms`);
+    console.log(`Transform: ${timeTransform} ms`);
+    console.log(`PutImage: ${timePutImage} ms`);
+  }
+
+  tryWorker() {
+    if (typeof Worker !== 'undefined') {
+      // Create a new
+      console.log('creating worker');
+      const worker = new Worker('./train.worker', { type: 'module' });
+      worker.onmessage = ({ data }) => {
+        console.log(`page got message: ${data}`);
+      };
+      worker.onerror = error => {
+        console.log('worker.onerror:', error);
+      };
+      worker.postMessage('hello');
+      console.log('posted message to:', worker);
+    } else {
+      console.log('web workers are not supported!');
+    }
   }
 }
+
+// if (typeof Worker !== 'undefined') {
+//   // Create a new
+//   const worker = new Worker('./train.worker', { type: 'module' });
+//   worker.onmessage = ({ data }) => {
+//     console.log(`page got message: ${data}`);
+//   };
+//   worker.postMessage('hello');
+// } else {
+//   // Web Workers are not supported in this environment.
+//   // You should add a fallback so that your program still executes correctly.
+// }

@@ -5,7 +5,7 @@ import { SudokuComponent } from './puzzle/sudoku/sudoku.component';
 import { TrainComponent } from "./train/train.component";
 
 const routes: Routes = [
-  { path: '', redirectTo: '/dominos', pathMatch: 'full' },
+  // { path: '', redirectTo: '/dominos', pathMatch: 'full' },
   { path: 'dominos', component: DominosComponent },
   { path: 'sudoku', component: SudokuComponent },
   { path: 'train', component: TrainComponent },

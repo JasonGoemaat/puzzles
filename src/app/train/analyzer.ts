@@ -1,7 +1,4 @@
 import * as brain from "brain.js/browser";
-import { LowerCasePipe } from '@angular/common';
-
-console.log('analyzer.ts');
 
 export class Analyzer {
     constructor(
@@ -175,74 +172,6 @@ export class Analyzer {
             dx: cols[bounds.d].x,
             dy: cols[bounds.d].y2,
         };
-
-        // let slopes = [];
-        // for (let i = 1; i < cols.length; i++) {
-        //     slopes.push({ top: cols[i].y1 - cols[i-1].y1, bottom: cols[i].y2 - cols[i-1].y2 });
-        // }
-
-        // slope across the middle of the puzzle top and bottom
-        // let midSlopes = this.getSlopes(cols);
-
-        // let leftMin = 0, leftMax = 0, rightMin = cols.length - 1, rightMax = cols.length - 1;
-        // for (let i = 1; i < cols.length * 0.3; i++) {
-        //     let col = cols[i];
-        //     if (col.y1 < cols[leftMin].y1) leftMin = i;
-        //     if (col.y2 < cols[leftMax].y2) leftMax = i;
-        // }
-        // for (let i = cols.length - 2; i >= cols.length * 0.7; i++) {
-        //     let col = cols[i];
-        //     if (col.y1 < cols[rightMin].y1) rightMin = i;
-        //     if (col.y2 < cols[rightMax].y2) rightMax = i;
-        // }
-
-
-        // simple strip, if less than 1/2 the height of the average, remove
-        // let totalHeight = cols.reduce((p, c) => p + (c.y2 - c.y1), 0);
-        // let heightLimit = (totalHeight / cols.length) * 0.2;
-        // while (cols.length > 3) {
-        //     let col = cols[0];
-        //     if ((col.y2 - col.y1) < heightLimit) {
-        //         cols.unshift();
-        //     } else {
-        //         break;
-        //     }
-        // }
-        // while (cols.length > 3) {
-        //     let col = cols[cols.length - 1];
-        //     if ((col.y2 - col.y1) < heightLimit) {
-        //         cols.pop();
-        //     } else {
-        //         break;
-        //     }
-        // }
-
-
-        if (strip) {
-            // get rid of left side parts that are too short, must be border
-            while (cols.length > 3) {
-                let h1 = cols[0].y2 - cols[0].y1;
-                let h2 = cols[2].y2 - cols[2].y1;
-                if (Math.abs(h2 - h1) > 8) {
-                    cols.shift();
-                } else {
-                    break;
-                }
-            }
-
-            while (cols.length > 3) {
-                let h1 = cols[cols.length - 1].y2 - cols[cols.length - 1].y1;
-                let h2 = cols[cols.length - 3].y2 - cols[cols.length - 3].y1;
-                if (Math.abs(h2 - h1) > 8) {
-                    cols.pop();
-                } else {
-                    break;
-                }
-            }
-        }
-
-        console.log('sorted cols:', cols);
-        return cols;
     }
 
     getSlopes(cols) {
@@ -256,13 +185,8 @@ export class Analyzer {
         let c = cols[mid + 40].y2;
         let d = cols[mid + 40].y2;
         let slopes = { top: (b - a) / 80, bottom: (c - d) / 80 };
-        console.log(`a: ${a}, b: ${b}, top: ${slopes.top}, c: ${c}, d: ${d}, bottom: ${slopes.bottom}`);
+
         return slopes;
-    }
-
-    findCorners(cols, slopes) {
-        // take top-left and keep moving left and possibly down (if top slope is negative), then try to move up 1
-
     }
 
     findCenterMins() {
@@ -287,7 +211,6 @@ export class Analyzer {
                 blues.push(b);
             }
         }
-        console.log('findCenterMins()', window.performance.now() - start, JSON.stringify(mins));
 
         return mins;
     }
@@ -315,10 +238,10 @@ export class Analyzer {
         let width = Math.round((dTop + dBottom) / 2) + 1;
         let height = Math.round((dLeft + dRight) / 2) + 1;
 
-        let id = new ImageData(width, height);
+        let id = new ImageData(width - 4, height - 4);
         let strings = [];
 
-        for (let x = 0; x < width; x++) {
+        for (let x = 2; x < width - 2; x++) {
             let frac = x / (width - 1);
             let top = { x: bounds.ax + topX * frac, y: bounds.ay + topY * frac };
             let bottom = { x: bounds.dx + bottomX * frac, y: bounds.dy + bottomY * frac };
@@ -326,21 +249,19 @@ export class Analyzer {
 
             let dx = bottom.x - top.x;
             let dy = bottom.y - top.y;
-            for (let y = 0; y < height; y++) {
+            for (let y = 2; y < height - 2; y++) {
                 let fy = y / (height - 1);
                 let ix = Math.round(top.x + fy * dx);
                 let iy = Math.round(top.y + fy * dy);
                 let offset = (this.imageData.width * iy + ix) * 4;
-                let offsetResult = (y * width + x) * 4;
+                let offsetResult = ((y - 1) * id.width + x - 1) * 4;
                 id.data[offsetResult++] = this.data[offset++];
                 id.data[offsetResult++] = this.data[offset++];
                 id.data[offsetResult++] = this.data[offset++];
-                id.data[offsetResult++] = this.data[offset++];
+                id.data[offsetResult++] = 0x7f;
             }
         }
 
-        window['bounds'] = bounds;
-        window['strings'] = strings;
         return id;
     }
 }
