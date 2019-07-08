@@ -2,6 +2,8 @@ import * as brain from "brain.js/browser";
 import { Component, OnInit, ViewChild, HostListener, NgZone } from '@angular/core';
 import { __core_private_testing_placeholder__ } from '@angular/core/testing';
 import { Analyzer } from "./analyzer";
+import { PuzzleAnalyzer } from '../puzzle/capture-dominos/puzzle-analyzer';
+import { DigitAnalyzer } from '../puzzle/capture-dominos/digit-analyzer';
 
 window['brain'] = brain;
 
@@ -202,6 +204,23 @@ export class TrainComponent implements OnInit {
     this.swatch.nativeElement.style.backgroundColor = hash;
   }
 
+  clip(source: ImageData, x, y, w, h, zoom = 1): ImageData {
+    let dest = new ImageData(w * zoom, h * zoom);
+    for (let dy = 0; dy < dest.height; dy++) {
+      for (let dx = 0; dx < dest.width; dx++) {
+        let sy = y + Math.trunc(dy / zoom);
+        let sx = x + Math.trunc(dx / zoom);
+        let soff = (sy * this.width + sx) * 4;
+        let doff = (dy * dest.width + dx) * 4;
+        dest.data[doff++] = source.data[soff++];
+        dest.data[doff++] = source.data[soff++];
+        dest.data[doff++] = source.data[soff++];
+        dest.data[doff++] = source.data[soff++];
+      }
+    }
+    return dest;
+  }
+
   /**
    * Zoom on to a point, create a 105x105 image that represents a 21x21 section.
    * Cursor location is in the center, out of bounds is white.  Center has a
@@ -223,16 +242,35 @@ export class TrainComponent implements OnInit {
     let dy = 0;
     let dw = 105;
     let dh = 105;
-    ctx.drawImage(image, sx, sy, sw, sh, dx, dy, dw, dh);
+    //ctx.drawImage(image, sx, sy, sw, sh, dx, dy, dw, dh);
+    ctx.resetTransform();
+
+    // transform hScale, vSkew, hSkew, vScale, hTranslate, vTranslate
+    ctx.setTransform(5, 0, 0, 5, 0, 0);
+
+    // imageData, dx(destX), dy(destY), dirtyX(sourceLeft), dirtyY(sourceTop), dirtyWidth, dirtyHeight
+    //ctx.putImageData(this.imageData, 0, 0, sx, sy, sw, sh);
+    let d = this.clip(this.imageData, sx, sy, sw, sh, 5);
+    ctx.putImageData(d, 0, 0);
 
     ctx.strokeStyle = "green";
     ctx.lineWidth = 3;
-    let half = 53;
-    ctx.moveTo(half, 0);
-    ctx.lineTo(half, 105);
-    ctx.moveTo(0, half);
-    ctx.lineTo(106, half);
+
+    // let half = 53;
+    // ctx.moveTo(half, 0);
+    // ctx.lineTo(half, 105);
+    // ctx.moveTo(0, half);
+    // ctx.lineTo(106, half);
+
+    ctx.lineWidth = 1;
+    let v = 10.5;
+    ctx.moveTo(v, 0);
+    ctx.lineTo(v, 21);
+    ctx.moveTo(0, v);
+    ctx.lineTo(21, v);
+
     ctx.stroke();
+
   }
 
   getPos($event: MouseEvent) {
@@ -579,8 +617,8 @@ export class TrainComponent implements OnInit {
     start = performance.now();
 
     let canvas: HTMLCanvasElement = this.overlayCanvas.nativeElement;
-    canvas.height = newData.height;
-    canvas.width = newData.width;
+    canvas.height = this.height;
+    canvas.width = this.width;
     let ctx = canvas.getContext('2d');
     ctx.putImageData(newData, 0, 0);
     let timePutImage = performance.now() - start;
@@ -589,6 +627,7 @@ export class TrainComponent implements OnInit {
     console.log(`Bounds: ${timeBounds} ms`);
     console.log(`Transform: ${timeTransform} ms`);
     console.log(`PutImage: ${timePutImage} ms`);
+    return newData;
   }
 
   tryWorker() {
@@ -608,6 +647,62 @@ export class TrainComponent implements OnInit {
       console.log('web workers are not supported!');
     }
   }
+
+  scanImage() {
+    console.log('scanImage()')
+    let transformedData = this.transformImage();
+
+    let start = performance.now();
+    let analyzer = new PuzzleAnalyzer(transformedData);
+    let nd = analyzer.scan();
+    // let left = this.width - nd.width;
+    // let top = this.height - nd.height;
+    let left = 0;
+    let top = 0;
+
+    for (let y = 0; y < nd.height; y++) {
+      let offsetOriginal = ((top + y) * this.width + left) * 4;
+      let offsetNew = y * nd.width * 4;
+      for (let x = 0; x < nd.width * 4; x++) {
+        this.imageData.data[offsetOriginal + x] = nd.data[offsetNew + x];
+      }
+    }
+
+    let canvas: HTMLCanvasElement = this.overlayCanvas.nativeElement;
+    let ctx = canvas.getContext('2d');
+    ctx.putImageData(nd, 0, 0);
+    this.scannedData = nd;
+
+    let ms = performance.now() - start;
+    console.log(`scan: ${ms.toFixed(2)} ms`);
+    start = performance.now();
+
+    let da = new DigitAnalyzer(this.scannedData);
+    let rowsAndCols = da.findRowsAndCols();
+    console.log('rowsAndCols:', rowsAndCols);
+
+    ctx.beginPath();
+    ctx.strokeStyle = "green";
+    rowsAndCols.cols.forEach(col => {
+      let x = col.x1 - 0.5;
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, nd.height + 0.5);
+      x = col.x2 + 0.5;
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, nd.height + 0.5);
+    });
+    rowsAndCols.rows.forEach(row => {
+      let y= row.y1 - 0.5;
+      ctx.moveTo(0, y);
+      ctx.lineTo(nd.width + 0.5, y);
+      y = row.y2 + 0.5;
+      ctx.moveTo(0, y);
+      ctx.lineTo(nd.width + 0.5, y);
+    });
+    ctx.stroke();
+  }
+
+  scannedData: ImageData;
 }
 
 // if (typeof Worker !== 'undefined') {

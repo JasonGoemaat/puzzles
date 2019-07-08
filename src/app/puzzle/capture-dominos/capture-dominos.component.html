@@ -1,0 +1,53 @@
+<div class="wrapper">
+    <div class="row">
+        <div class="cell video">
+            <div class="title">Video</div>
+            <div class="content">
+                <video #video></video>
+            </div>
+            <div class="text">{{textVideo}}</div>
+        </div>
+
+        <div class="cell capture">
+            <div class="title">Capture</div>
+            <div class="content">
+                <canvas [style.width]="videoWidth" [style.height]="videoHeight" #canvasCapture></canvas>
+            </div>
+            <div class="text">{{textCapture}}</div>
+        </div>
+
+        <div class="cell">
+            <div class="title">Bounds</div>
+            <div class="content">
+                <canvas #canvasBounds></canvas>
+            </div>
+            <div class="text">{{textBounds}}</div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="cell">
+            <div class="title">Transformed</div>
+            <div class="content">
+                <canvas #canvasTransformed></canvas>
+            </div>
+            <div class="text">{{textTransformed}}</div>
+        </div>
+
+        <div class="cell">
+            <div class="title">Scanned</div>
+            <div class="content">
+                <canvas #canvasScanned></canvas>
+            </div>
+            <div class="text">{{textScanned}}</div>
+        </div>
+
+        <div class="cell">
+            <div class="title">Digits</div>
+            <div class="content">
+                <canvas #canvasDigits></canvas>
+            </div>
+            <div class="text">{{textDigits}}</div>
+        </div>
+    </div>
+</div>

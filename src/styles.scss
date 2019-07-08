@@ -2,3 +2,11 @@
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+nav.mat-tab-nav-bar.mat-primary {
+    div.mat-tab-links {
+        a.mat-tab-link {
+            height: 32px;
+        }
+    }
+}

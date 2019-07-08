@@ -232,20 +232,20 @@ export class Analyzer {
         let dLeft = Math.sqrt(sqr(leftX) + sqr(leftY));
         let dRight = Math.sqrt(sqr(rightX) + sqr(rightY));
 
-        console.log(JSON.stringify({ topX, topY, bottomX, bottomY }, null, 2));
-        console.log(JSON.stringify({ dTop, dBottom, dLeft, dRight }, null, 2));
+        // console.log(JSON.stringify({ topX, topY, bottomX, bottomY }, null, 2));
+        // console.log(JSON.stringify({ dTop, dBottom, dLeft, dRight }, null, 2));
 
         let width = Math.round((dTop + dBottom) / 2) + 1;
         let height = Math.round((dLeft + dRight) / 2) + 1;
 
         let id = new ImageData(width - 4, height - 4);
-        let strings = [];
+        // let strings = [];
 
         for (let x = 2; x < width - 2; x++) {
             let frac = x / (width - 1);
             let top = { x: bounds.ax + topX * frac, y: bounds.ay + topY * frac };
             let bottom = { x: bounds.dx + bottomX * frac, y: bounds.dy + bottomY * frac };
-            strings.push(`x: ${x}, top: ${top.x}, ${top.y}, bottom: ${bottom.x}, ${bottom.y}}`);
+            // strings.push(`x: ${x}, top: ${top.x}, ${top.y}, bottom: ${bottom.x}, ${bottom.y}}`);
 
             let dx = bottom.x - top.x;
             let dy = bottom.y - top.y;
