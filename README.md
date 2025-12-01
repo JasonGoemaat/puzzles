@@ -4,6 +4,11 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 
 ## Development server
 
+> You must use `puzzles.cmd`, or manually set an environmente variable to
+build since we are using an old version of Angular which is using an old
+veresion of webpack which is using an old version of OpenSSL:
+`SET NODE_OPTIONS=--openssl-legacy-provider`
+
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
 
 ## Code scaffolding

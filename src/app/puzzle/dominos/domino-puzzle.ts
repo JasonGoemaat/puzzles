@@ -1,5 +1,3 @@
-import { isNumber } from 'util';
-
 const KEYS = {
     LEFT: 37,
     RIGHT: 39,
